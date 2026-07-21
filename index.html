@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neo &times; Bhanu Kumar &middot; Proof of Work</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&family=Manrope:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+
+:root{
+  --bg:       #08070c;
+  --bg2:      #0d0b13;
+  --bg3:      #131019;
+  --bg4:      #191521;
+  --bg5:      #211c2c;
+  --bdr:      rgba(255,255,255,0.07);
+  --bmd:      rgba(255,255,255,0.13);
+  --blg:      rgba(255,255,255,0.22);
+  --t1:       #f0eef6;
+  --t2:       #938da3;
+  --t3:       #524d5f;
+  --signal:      #8c7cf6;
+  --signal-dim:  rgba(140,124,246,0.10);
+  --signal-glow: rgba(140,124,246,0.24);
+  --signal-t:    #ac9ffa;
+  --gold:        #f0a94e;
+  --gold-dim:    rgba(240,169,78,0.11);
+  --gold-glow:   rgba(240,169,78,0.22);
+  --gold-t:      #f5c27f;
+  --red:         #ef6b62;
+  --red-dim:     rgba(239,107,98,0.10);
+  --red-t:       #f5928a;
+  --green:       #3ddc97;
+  --green-dim:   rgba(61,220,151,0.10);
+  --green-t:     #6ee6b4;
+}
+
+html{scroll-behavior:smooth;scroll-padding-top:64px;}
+body{
+  background:var(--bg);color:var(--t1);
+  font-family:'Manrope',system-ui,sans-serif;
+  font-size:16px;line-height:1.7;font-weight:400;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(680px 460px at 12% -6%, rgba(140,124,246,0.08), transparent 60%),
+    radial-gradient(620px 420px at 96% 8%, rgba(240,169,78,0.05), transparent 60%);
+}
+
+::selection{background:var(--signal-dim);color:var(--t1);}
+a{color:inherit;}
+img,svg{display:block;}
+
+.pbar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--signal),var(--gold));z-index:500;width:0%;transition:width 0.1s linear;}
+
+.nav{
+  position:sticky;top:0;z-index:300;
+  background:rgba(8,7,12,0.92);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  border-bottom:1px solid var(--bdr);
+  padding:0 5vw;
+}
+.nav-i{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:60px;gap:16px;}
+.nav-brand{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--t1);letter-spacing:0.02em;white-space:nowrap;display:flex;align-items:center;gap:8px;text-decoration:none;}
+.nav-brand .dot{width:6px;height:6px;border-radius:50%;background:var(--signal);box-shadow:0 0 0 0 var(--signal-glow);animation:dotpulse 2.6s ease-in-out infinite;}
+@keyframes dotpulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.45;transform:scale(0.72);}}
+.nav-brand b{font-weight:500;color:var(--t1);}
+.nav-brand span{color:var(--t3);}
+.nav-links{display:flex;gap:2px;flex-wrap:wrap;}
+.np{font-size:12px;font-weight:500;padding:6px 12px;border-radius:6px;border:1px solid transparent;color:var(--t2);background:transparent;text-decoration:none;transition:all 0.13s;white-space:nowrap;font-family:'JetBrains Mono',monospace;letter-spacing:0.01em;}
+.np:hover{border-color:var(--bdr);color:var(--t1);background:var(--bg3);}
+.np.cta{background:var(--signal);border-color:var(--signal);color:#0c0917;font-weight:600;margin-left:6px;}
+.np.cta:hover{opacity:0.88;}
+
+.hbg{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px;flex-shrink:0;}
+.hbg span{display:block;width:20px;height:1.5px;background:var(--t1);border-radius:2px;transition:transform .3s,opacity .3s;}
+.hbg.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg);}
+.hbg.open span:nth-child(2){opacity:0;}
+.hbg.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg);}
+
+.mob-menu{display:none;position:fixed;inset:0;top:60px;background:var(--bg);z-index:290;flex-direction:column;padding:26px 5vw;gap:0;border-top:1px solid var(--bdr);}
+.mob-menu.open{display:flex;}
+.mob-menu a{display:block;font-size:18px;font-family:'Newsreader',serif;font-style:italic;font-weight:400;color:var(--t1);text-decoration:none;padding:15px 0;border-bottom:1px solid var(--bdr);}
+.mob-menu a:last-child{border-bottom:none;}
+.mob-menu a.mcta{color:var(--signal-t);}
+@media(max-width:760px){.nav-links{display:none;}.hbg{display:flex;}}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 5vw;position:relative;z-index:1;}
+section.part{padding:84px 0;border-bottom:1px solid var(--bdr);}
+
+.rv{opacity:0;transform:translateY(14px);transition:opacity 0.55s ease,transform 0.55s ease;}
+.rv.in{opacity:1;transform:none;}
+
+.hero{padding:86px 5vw 76px;max-width:1180px;margin:0 auto;position:relative;z-index:1;border-bottom:1px solid var(--bdr);}
+.hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:500;letter-spacing:0.13em;text-transform:uppercase;color:var(--t3);margin-bottom:22px;}
+.hero-hed{font-family:'Newsreader',serif;font-weight:400;font-style:italic;font-size:clamp(32px,5.6vw,60px);line-height:1.1;letter-spacing:-0.01em;color:var(--t1);margin-bottom:18px;max-width:840px;}
+.hero-sub{font-size:clamp(15px,1.7vw,17.5px);color:var(--t2);max-width:600px;line-height:1.7;margin-bottom:40px;font-weight:400;}
+.hero-sub strong{color:var(--t1);font-weight:600;}
+
+/* ===== HERO WIDGET: WITHOUT / WITH NEO TOGGLE ===== */
+.dk-caption{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);letter-spacing:0.04em;margin-bottom:14px;}
+.toggle-wrap{background:var(--bg2);border:1px solid var(--bdr);border-radius:14px;padding:26px;margin-bottom:14px;}
+.toggle-head{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:22px;}
+.toggle-lab{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.06em;color:var(--t3);transition:color 0.2s;}
+.toggle-lab.on{color:var(--red-t);}
+.toggle-lab.on.green{color:var(--green-t);}
+.tsw{position:relative;width:52px;height:28px;border-radius:20px;background:var(--bg4);border:1px solid var(--bmd);cursor:pointer;flex-shrink:0;transition:background 0.25s,border-color 0.25s;}
+.tsw::after{content:'';position:absolute;top:2px;left:2px;width:22px;height:22px;border-radius:50%;background:var(--t2);transition:transform 0.28s cubic-bezier(.4,0,.2,1),background 0.25s;}
+.tsw.on{background:var(--green-dim);border-color:rgba(61,220,151,0.4);}
+.tsw.on::after{transform:translateX(24px);background:var(--green);}
+
+.task-line{font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--t3);text-align:center;margin-bottom:20px;letter-spacing:0.01em;}
+.task-line b{color:var(--t2);font-weight:500;}
+
+.stage{position:relative;min-height:210px;}
+.stage-panel{display:none;}
+.stage-panel.show{display:block;}
+
+/* without-neo state */
+.chiprow{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:18px;min-height:34px;}
+.appchip{
+  font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--t2);
+  background:var(--bg3);border:1px solid var(--bdr);border-radius:7px;
+  padding:6px 12px 6px 6px;opacity:0;transform:translateY(6px);
+  transition:opacity 0.4s ease,transform 0.4s ease,border-color 0.2s;
+  display:inline-flex;align-items:center;gap:7px;
+}
+.appchip .chip-mono{width:18px;height:18px;border-radius:5px;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--t3);flex-shrink:0;}
+.appchip.active .chip-mono{color:var(--red-t);}
+.appchip.in{opacity:1;transform:none;}
+.appchip.active{border-color:rgba(239,107,98,0.4);color:var(--red-t);}
+.stat-row{display:flex;justify-content:center;gap:28px;margin-bottom:16px;}
+.stat{text-align:center;}
+.stat-num{font-family:'JetBrains Mono',monospace;font-size:22px;color:var(--t1);font-weight:600;}
+.stat-lab{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);letter-spacing:0.06em;text-transform:uppercase;margin-top:2px;}
+.status-pill{
+  display:block;margin:0 auto;width:fit-content;font-family:'JetBrains Mono',monospace;font-size:11.5px;
+  padding:6px 14px;border-radius:20px;background:var(--red-dim);color:var(--red-t);
+  border:1px solid rgba(239,107,98,0.28);opacity:0;transition:opacity 0.4s ease;
+}
+.status-pill.in{opacity:1;}
+
+/* with-neo state */
+.friday-thread{background:var(--bg3);border:1px solid rgba(140,124,246,0.22);border-radius:10px;padding:16px 18px;max-width:400px;margin:0 auto 16px;}
+.friday-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.friday-dot{width:16px;height:16px;border-radius:5px;background:linear-gradient(135deg,var(--signal),var(--gold));flex-shrink:0;}
+.friday-name{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--signal-t);letter-spacing:0.02em;}
+.check-item{
+  display:flex;align-items:center;gap:9px;font-size:12.5px;color:var(--t3);
+  padding:6px 0;opacity:0;transform:translateX(-8px);
+  transition:opacity 0.35s ease,transform 0.35s ease,color 0.2s;
+}
+.check-item.in{opacity:1;transform:none;color:var(--t2);}
+.check-item.done{color:var(--t1);}
+.check-box{
+  width:15px;height:15px;border-radius:4px;border:1.5px solid var(--bmd);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;transition:all 0.2s;
+}
+.check-box.on{background:var(--green);border-color:var(--green);}
+.check-box svg{width:9px;height:9px;opacity:0;transition:opacity 0.15s;}
+.check-box.on svg{opacity:1;}
+.status-pill.green{background:var(--green-dim);color:var(--green-t);border-color:rgba(61,220,151,0.3);}
+
+.stage-note{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--t3);text-align:center;margin-top:4px;}
+
+@media(max-width:600px){
+  .stat-row{gap:18px;}
+}
+
+.hero-toc{display:flex;gap:8px;flex-wrap:wrap;}
+.toc-pill{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3);text-decoration:none;letter-spacing:0.02em;padding:7px 13px;border:1px solid var(--bdr);border-radius:20px;transition:all 0.15s;}
+.toc-pill:hover{color:var(--t1);border-color:var(--bmd);background:var(--bg3);}
+
+.sec-label{display:flex;align-items:center;gap:14px;margin-bottom:28px;}
+.sec-num{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--signal-t);background:var(--signal-dim);border:1px solid rgba(140,124,246,0.22);border-radius:4px;padding:3px 10px;white-space:nowrap;}
+.sec-title{font-size:11px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;color:var(--t3);font-family:'JetBrains Mono',monospace;}
+.part-h{font-family:'Newsreader',serif;font-style:italic;font-weight:400;font-size:clamp(24px,3.4vw,36px);line-height:1.22;color:var(--t1);margin-bottom:14px;max-width:780px;}
+.part-lead{font-size:15px;color:var(--t2);line-height:1.75;max-width:700px;margin-bottom:34px;}
+.part-lead strong{color:var(--t1);font-weight:600;}
+
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;}
+.tab{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;padding:7px 16px;border-radius:7px;border:1px solid var(--bdr);color:var(--t2);background:transparent;cursor:pointer;transition:all 0.13s;}
+.tab:hover{border-color:var(--bmd);color:var(--t1);}
+.tab.on{background:var(--bg4);border-color:var(--bmd);color:var(--t1);}
+.tab.on.gold{border-color:rgba(240,169,78,0.4);color:var(--gold-t);background:var(--gold-dim);}
+.tpanel{display:none;}
+.tpanel.on{display:block;}
+
+.panel-box{background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:26px;}
+.panel-box.gold{border-color:rgba(240,169,78,0.18);}
+.panel-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--t3);margin-bottom:14px;display:block;}
+.panel-h{font-family:'Newsreader',serif;font-style:italic;font-weight:400;font-size:clamp(17px,2.2vw,22px);color:var(--t1);line-height:1.34;margin-bottom:14px;}
+.panel-body{font-size:14.5px;color:var(--t2);line-height:1.78;}
+.panel-body strong{color:var(--t1);font-weight:600;}
+.panel-why{margin-top:16px;font-size:12.5px;color:var(--t3);line-height:1.68;padding:13px 15px;background:var(--bg3);border-radius:7px;border-left:2px solid rgba(240,169,78,0.4);}
+.panel-why strong{color:var(--t2);}
+
+.asset-card{margin-top:16px;background:var(--bg3);border:1px solid var(--bdr);border-radius:10px;padding:18px 20px;}
+.asset-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;color:var(--gold-t);margin-bottom:10px;display:inline-block;background:var(--gold-dim);padding:3px 9px;border-radius:4px;}
+.asset-text{font-size:14px;color:var(--t1);line-height:1.7;font-style:italic;font-family:'Newsreader',serif;}
+
+/* ===== FIVE PROBLEMS GRID ===== */
+.prob-list{display:flex;flex-direction:column;gap:12px;}
+.prob-row{background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:22px 24px;display:grid;grid-template-columns:28px 1fr;gap:16px;align-items:start;}
+.prob-n{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--signal-t);background:var(--signal-dim);border:1px solid rgba(140,124,246,0.2);border-radius:6px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;}
+.prob-body{min-width:0;}
+.prob-internal{font-size:11.5px;color:var(--t3);line-height:1.6;margin-bottom:10px;font-family:'JetBrains Mono',monospace;}
+.prob-internal b{color:var(--t3);}
+.prob-customer{font-family:'Newsreader',serif;font-style:italic;font-size:clamp(16px,2vw,19px);color:var(--t1);line-height:1.4;}
+
+/* ===== STORYBOARD ===== */
+.sb-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+.sb-tab{font-family:'JetBrains Mono',monospace;font-size:11.5px;width:38px;height:38px;border-radius:8px;border:1px solid var(--bdr);color:var(--t3);background:transparent;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
+.sb-tab:hover{border-color:var(--bmd);color:var(--t1);}
+.sb-tab.on{background:var(--gold);border-color:var(--gold);color:#231400;font-weight:700;}
+.sb-frame{display:none;}
+.sb-frame.on{display:grid;grid-template-columns:240px 1fr;gap:24px;}
+@media(max-width:700px){.sb-frame.on{grid-template-columns:1fr;}}
+
+.sb-screen{background:var(--bg4);border:1px solid var(--bmd);border-radius:10px;padding:16px;aspect-ratio:9/11;display:flex;flex-direction:column;gap:10px;font-family:'JetBrains Mono',monospace;}
+.sb-bar{display:flex;gap:5px;margin-bottom:4px;}
+.sb-bar span{width:7px;height:7px;border-radius:50%;background:var(--bg5);}
+.sb-screen-body{flex:1;display:flex;flex-direction:column;justify-content:center;gap:8px;}
+.sb-time{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:10px;display:block;}
+.sb-vo{font-family:'Newsreader',serif;font-style:italic;font-size:18px;color:var(--t1);line-height:1.4;margin-bottom:12px;}
+.sb-onscreen{font-size:13.5px;color:var(--t2);line-height:1.7;}
+
+.mock-query{font-size:12px;color:var(--t3);}
+.mock-query .typed{color:var(--signal-t);}
+.mock-row{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;padding:6px 0;border-bottom:1px solid var(--bg5);}
+.mock-thread{display:flex;flex-direction:column;gap:8px;}
+.mock-thread-item{font-size:11px;color:var(--t2);padding:6px 8px;background:var(--bg3);border-radius:6px;}
+.mock-thread-item.gold{color:var(--gold-t);}
+.mock-pill{font-size:9.5px;color:var(--green-t);background:var(--green-dim);border-radius:5px;padding:2px 7px;}
+.mock-stat-row{font-size:26px;color:var(--t1);display:flex;align-items:center;gap:8px;justify-content:center;}
+.mock-stat-lab{font-size:10px;color:var(--t3);text-align:center;margin-top:8px;letter-spacing:0.04em;}
+.mock-end{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;}
+.mw{font-family:'Newsreader',serif;font-style:italic;font-size:20px;color:var(--t1);}
+
+/* ===== PRESS ENTER PIPELINE ===== */
+.press-wrap{max-width:420px;margin:0 auto 8px;}
+.press-item{display:grid;grid-template-columns:32px 1fr;gap:16px;align-items:start;}
+.press-dotcol{display:flex;flex-direction:column;align-items:center;}
+.press-dot{
+  width:32px;height:32px;border-radius:50%;background:var(--bg3);
+  border:1.5px solid var(--bmd);display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;color:var(--t3);transition:background 0.3s,border-color 0.3s,color 0.3s,box-shadow 0.3s;
+}
+.press-dot svg{width:15px;height:15px;}
+.press-dot.on{background:var(--signal);border-color:var(--signal);color:#0c0917;box-shadow:0 0 0 4px var(--signal-dim);}
+.press-dot.done{background:var(--green);border-color:var(--green);color:#06140f;box-shadow:0 0 0 4px var(--green-dim);}
+.press-seg{width:2px;flex:1;min-height:24px;background:var(--bg4);position:relative;overflow:hidden;}
+.press-seg::after{content:'';position:absolute;top:0;left:0;right:0;height:0%;background:var(--signal);transition:height 0.4s ease;}
+.press-seg.fill::after{height:100%;}
+.press-label-row{padding-top:4px;padding-bottom:20px;}
+.press-name{font-family:'JetBrains Mono',monospace;font-size:13.5px;color:var(--t3);transition:color 0.3s;}
+.press-name.on{color:var(--t1);font-weight:600;}
+.press-sub{font-size:12px;color:var(--t3);margin-top:3px;opacity:0;transform:translateY(-2px);transition:opacity 0.3s ease,transform 0.3s ease;}
+.press-sub.on{opacity:1;transform:none;color:var(--t2);}
+.press-wrap .replay-btn{margin:6px auto 0;}
+
+/* ===== COMPARISON TABLE ===== */
+.comp-table{border:1px solid var(--bdr);border-radius:12px;overflow:hidden;}
+.comp-row{display:grid;grid-template-columns:1.1fr 1.6fr 1.8fr;}
+.comp-row:not(:last-child){border-bottom:1px solid var(--bdr);}
+.comp-cell{padding:16px 18px;font-size:13px;color:var(--t2);line-height:1.6;border-right:1px solid var(--bdr);}
+.comp-cell:last-child{border-right:none;}
+.comp-head-row{background:var(--bg3);}
+.comp-head-row .comp-cell{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:0.08em;text-transform:uppercase;color:var(--t3);}
+.comp-tool{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--t1);font-weight:500;display:inline-flex;align-items:center;gap:9px;}
+.comp-mono{width:22px;height:22px;border-radius:6px;background:var(--bg4);border:1px solid var(--bmd);display:inline-flex;align-items:center;justify-content:center;font-size:10px;color:var(--t2);flex-shrink:0;}
+@media(max-width:760px){
+  .comp-row{grid-template-columns:1fr;}
+  .comp-cell{border-right:none;border-bottom:1px solid var(--bdr);}
+  .comp-row .comp-cell:last-child{border-bottom:none;}
+  .comp-head-row{display:none;}
+}
+
+.pull{margin-top:26px;font-family:'Newsreader',serif;font-style:italic;font-weight:400;font-size:clamp(18px,2.6vw,24px);color:var(--t1);line-height:1.45;border-left:2px solid var(--gold);padding-left:20px;max-width:680px;}
+.disclaimer{margin-top:16px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--t3);line-height:1.7;}
+
+/* ===== LAUNCH PLAN ===== */
+.lp-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:36px;}
+@media(max-width:900px){.lp-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:560px){.lp-grid{grid-template-columns:1fr;}}
+.lp-grid.lp-3{grid-template-columns:repeat(3,1fr);}
+@media(max-width:900px){.lp-grid.lp-3{grid-template-columns:1fr;}}
+.metrics-grid.mg-4{grid-template-columns:repeat(4,1fr);}
+@media(max-width:900px){.metrics-grid.mg-4{grid-template-columns:repeat(2,1fr);}}
+.lp-card{background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:20px;}
+.lp-card.gold{border-color:rgba(240,169,78,0.22);}
+.lp-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--gold-t);display:block;margin-bottom:10px;}
+.lp-card h4{font-family:'Newsreader',serif;font-style:italic;font-size:16px;color:var(--t1);margin-bottom:10px;}
+.lp-card ul{padding-left:16px;font-size:12.5px;color:var(--t2);line-height:1.85;}
+
+.metrics-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;margin-bottom:16px;}
+.metrics-sub{font-size:12.5px;color:var(--t3);}
+.metrics-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+@media(max-width:900px){.metrics-grid{grid-template-columns:repeat(2,1fr);}}
+.metric-card{background:var(--bg3);border:1px solid var(--bdr);border-radius:9px;padding:14px 16px;}
+.metric-cat{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;color:var(--signal-t);display:block;margin-bottom:6px;}
+.metric-card p{font-size:12px;color:var(--t2);line-height:1.6;}
+
+.dk-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);}
+
+/* ===== TEAM OPS ===== */
+.ops-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+@media(max-width:760px){.ops-grid{grid-template-columns:1fr;}}
+.ops-card{background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:22px;}
+.ops-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.07em;text-transform:uppercase;color:var(--t3);display:block;margin-bottom:10px;}
+.ops-card h4{font-family:'Newsreader',serif;font-style:italic;font-size:17.5px;color:var(--t1);margin-bottom:10px;line-height:1.3;}
+.ops-card p{font-size:13.5px;color:var(--t2);line-height:1.75;}
+
+/* ===== WORK GRID ===== */
+.wgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+@media(max-width:760px){.wgrid{grid-template-columns:1fr;}}
+.wcard{display:block;background:var(--bg2);border:1px solid var(--bdr);border-radius:10px;padding:22px;text-decoration:none;transition:all 0.15s;position:relative;}
+.wcard:hover{border-color:var(--bmd);background:var(--bg3);}
+.wcard-tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t3);letter-spacing:0.04em;text-transform:uppercase;display:block;margin-bottom:10px;}
+.wcard h4{font-family:'Newsreader',serif;font-style:italic;font-weight:500;font-size:19px;color:var(--t1);margin-bottom:8px;}
+.wcard p{font-size:13.5px;color:var(--t2);line-height:1.68;margin-bottom:6px;}
+.wcard-arr{position:absolute;top:22px;right:22px;color:var(--t3);font-size:14px;transition:all 0.15s;}
+.wcard:hover .wcard-arr{color:var(--gold-t);transform:translateX(2px);}
+.wcard.full{grid-column:1/-1;}
+
+/* ===== SIGNATURE / FOOTER ===== */
+.sig{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:24px;padding:56px 0 60px;}
+.sig-name{font-family:'Newsreader',serif;font-style:italic;font-size:26px;color:var(--t1);margin-bottom:8px;}
+.sig-name span{color:var(--t3);}
+.sig-links{font-size:13.5px;color:var(--t2);line-height:1.9;}
+.sig-links a{text-decoration:none;color:var(--t2);transition:color 0.15s;}
+.sig-links a:hover{color:var(--signal-t);}
+.sig-icons{display:flex;gap:10px;}
+.sig-icons a{
+  width:38px;height:38px;border-radius:9px;border:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:center;color:var(--t2);
+  transition:all 0.15s;
+}
+.sig-icons a:hover{border-color:var(--bmd);background:var(--bg3);color:var(--signal-t);}
+.sig-icons svg{width:17px;height:17px;}
+.sig-btns{display:flex;gap:10px;flex-wrap:wrap;}
+.sbtn{font-family:'JetBrains Mono',monospace;font-size:12.5px;font-weight:500;padding:11px 20px;border-radius:8px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all 0.15s;}
+.sbtn.pri{background:var(--signal);color:#0c0917;}
+.sbtn.pri:hover{opacity:0.88;}
+.sbtn.ghost{border:1px solid var(--bdr);color:var(--t1);}
+.sbtn.ghost:hover{border-color:var(--bmd);background:var(--bg3);}
+.note{font-size:11.5px;color:var(--t3);font-family:'JetBrains Mono',monospace;padding:22px 0 40px;border-top:1px solid var(--bdr);}
+
+@media(max-width:600px){
+  .sec-label{flex-wrap:wrap;}
+  section.part{padding:60px 0;}
+  .hero{padding:64px 5vw 56px;}
+  .prob-row{grid-template-columns:24px 1fr;padding:18px;}
+}
+</style>
+</head>
+<body>
+
+<div class="pbar" id="pbar"></div>
+
+<nav class="nav">
+  <div class="nav-i">
+    <a href="#top" class="nav-brand"><span class="dot"></span><b>Bhanu Kumar</b><span>&nbsp;&times;&nbsp;Neo</span></a>
+    <div class="nav-links">
+      <a class="np" href="#manifesto">Manifesto</a>
+      <a class="np" href="#category">Category</a>
+      <a class="np" href="#launch">Launch</a>
+      <a class="np" href="#motion">Press Enter</a>
+      <a class="np" href="#ops">Execution</a>
+      <a class="np" href="#work">Work</a>
+      <a class="np cta" href="mailto:bhanukumar0902@gmail.com">Say hello</a>
+    </div>
+    <button class="hbg" id="hbg" onclick="toggleMob()" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<div class="mob-menu" id="mobm">
+  <a href="#manifesto" onclick="closeMob()">01 / The Manifesto, Sharpened</a>
+  <a href="#category" onclick="closeMob()">02 / Category</a>
+  <a href="#launch" onclick="closeMob()">03 / Two Launches</a>
+  <a href="#motion" onclick="closeMob()">04 / Press Enter</a>
+  <a href="#ops" onclick="closeMob()">05 / Running the Team</a>
+  <a href="#work" onclick="closeMob()">06 / Other Work</a>
+  <a class="mcta" href="mailto:bhanukumar0902@gmail.com" onclick="closeMob()">Say hello &rarr;</a>
+</div>
+
+<div id="top"></div>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero-eyebrow rv">Proof of Work &middot; Product Marketing &middot; Neo</div>
+  <h1 class="hero-hed rv">Neo isn&rsquo;t selling software. It&rsquo;s selling delegation.</h1>
+  <p class="hero-sub rv">Neo just opened its waitlist for a work platform built from Tasket, Friday, Studio, and Drive. Here&rsquo;s how I&rsquo;d position it, launch it, and run the team behind it.</p>
+
+  <div class="dk-caption rv">The pitch, made physical, before a word of copy explains it:</div>
+  <div class="toggle-wrap rv">
+    <div class="toggle-head">
+      <span class="toggle-lab on" id="labOff">Without Neo</span>
+      <div class="tsw" id="tsw" onclick="handleToggle()"></div>
+      <span class="toggle-lab" id="labOn">With Neo</span>
+    </div>
+    <div class="task-line">Task: <b>renew the Acme Corp contract before Friday</b></div>
+
+    <div class="stage">
+      <div class="stage-panel show" id="stageOff">
+        <div class="chiprow" id="chipRow"></div>
+        <div class="stat-row">
+          <div class="stat"><div class="stat-num" id="statSwitch">0</div><div class="stat-lab">Tab switches</div></div>
+          <div class="stat"><div class="stat-num" id="statTime">0:00</div><div class="stat-lab">Elapsed</div></div>
+        </div>
+        <div class="status-pill" id="statusOff">Still open in 5 tabs</div>
+      </div>
+
+      <div class="stage-panel" id="stageOn">
+        <div class="friday-thread">
+          <div class="friday-head"><span class="friday-dot"></span><span class="friday-name">Friday &middot; working on it</span></div>
+          <div id="checkList"></div>
+        </div>
+        <div class="status-pill green" id="statusOn">Done</div>
+      </div>
+    </div>
+    <div class="stage-note">Illustrative walkthrough of the pitch, not a benchmarked result.</div>
+  </div>
+
+  <div class="hero-toc rv" style="margin-top:30px;">
+    <a class="toc-pill" href="#manifesto">01 Manifesto, Sharpened</a>
+    <a class="toc-pill" href="#category">02 Category</a>
+    <a class="toc-pill" href="#launch">03 Two Launches</a>
+    <a class="toc-pill" href="#motion">04 Press Enter</a>
+    <a class="toc-pill" href="#ops">05 Running the Team</a>
+    <a class="toc-pill" href="#work">06 Other Work</a>
+  </div>
+</section>
+
+<!-- ============ 01 THE MANIFESTO, SHARPENED ============ -->
+<section class="part" id="manifesto">
+  <div class="wrap">
+    <div class="sec-label rv"><span class="sec-num">01</span><span class="sec-title">The Manifesto, Sharpened</span></div>
+    <h2 class="part-h rv">Neo already named the five problems. Here&rsquo;s the sentence a buyer would actually say.</h2>
+    <p class="part-lead rv">Neo&rsquo;s own manifesto page lays out a sharp internal thesis: context fragmentation, process knowledge that lives only in people&rsquo;s heads, adoption inertia, integration tax, and compliance and cost opacity. It&rsquo;s a good engineering read. It&rsquo;s not yet something a VP of Ops would recognize as their own Tuesday. Here&rsquo;s the outward line for each one.</p>
+
+    <div class="prob-list rv">
+      <div class="prob-row">
+        <div class="prob-n"><svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="4.5" height="4.5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="9.5" y="2" width="4.5" height="4.5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="2" y="9.5" width="4.5" height="4.5" rx="1" stroke="currentColor" stroke-width="1.3"/><rect x="9.5" y="9.5" width="4.5" height="4.5" rx="1" stroke="currentColor" stroke-width="1.3"/></svg></div>
+        <div class="prob-body">
+          <div class="prob-internal"><b>As written:</b> enterprise knowledge is fragmented across email, chat, docs, and tools, so AI only ever sees a slice of the picture.</div>
+          <div class="prob-customer">&ldquo;Your AI assistant writes beautifully. It just has no idea your Q3 numbers live in a Slack thread from March.&rdquo;</div>
+        </div>
+      </div>
+      <div class="prob-row">
+        <div class="prob-n"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2a4 4 0 0 0-2.2 7.3c.3.2.5.6.5 1v.7h3.4v-.7c0-.4.2-.8.5-1A4 4 0 0 0 8 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M6.3 13.5h3.4M6.8 15h2.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></div>
+        <div class="prob-body">
+          <div class="prob-internal"><b>As written:</b> skills, SOPs, and institutional know-how live in people&rsquo;s memories, not in a format AI can execute against.</div>
+          <div class="prob-customer">&ldquo;The person who actually knows how you close this kind of deal is one resignation letter away from taking that knowledge with them.&rdquo;</div>
+        </div>
+      </div>
+      <div class="prob-row">
+        <div class="prob-n"><svg viewBox="0 0 16 16" fill="none"><path d="M13 8a5 5 0 1 1-1.5-3.6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M13 2v3.2H9.8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="prob-body">
+          <div class="prob-internal"><b>As written:</b> there&rsquo;s no shared skill library, so what works on one team never reaches another, and every person rebuilds from zero.</div>
+          <div class="prob-customer">&ldquo;Someone on your ops team already built the perfect AI workflow for this exact task. Nobody else on the team knows it exists.&rdquo;</div>
+        </div>
+      </div>
+      <div class="prob-row">
+        <div class="prob-n"><svg viewBox="0 0 16 16" fill="none"><path d="M6.5 9.5l3-3M5 6l2-2 3 3-2 2-3-3z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M9 10l2-2 3 3-2 2-3-3z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></div>
+        <div class="prob-body">
+          <div class="prob-internal"><b>As written:</b> connecting AI to the dozens of tools an enterprise actually runs on costs more effort than the AI work itself.</div>
+          <div class="prob-customer">&ldquo;You didn&rsquo;t buy an AI seat to spend the first quarter wiring it to your CRM.&rdquo;</div>
+        </div>
+      </div>
+      <div class="prob-row">
+        <div class="prob-n"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2l5 1.8v4c0 3.3-2.1 5.7-5 6.5-2.9-.8-5-3.2-5-6.5v-4L8 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M6 8l1.5 1.5L10.5 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="prob-body">
+          <div class="prob-internal"><b>As written:</b> enterprises need to monitor AI usage, data access, decisions, and cost in one place.</div>
+          <div class="prob-customer">&ldquo;Ask your CFO if they can tell you what your AI tools actually did last month. Most can&rsquo;t answer that yet.&rdquo;</div>
+        </div>
+      </div>
+    </div>
+    <p class="disclaimer">Source: neo.work/manifesto, paraphrased from Neo&rsquo;s own published framing. The five customer lines are my rewrite, not Neo copy.</p>
+  </div>
+</section>
+
+<!-- ============ 02 CATEGORY ============ -->
+<section class="part" id="category">
+  <div class="wrap">
+    <div class="sec-label rv"><span class="sec-num">02</span><span class="sec-title">Category</span></div>
+    <h2 class="part-h rv">The category name matters more than usual here.</h2>
+    <p class="part-lead rv">Neo isn&rsquo;t launching into empty space. Coverage of the launch already frames it against Microsoft Copilot, Google Gemini for Workspace, Notion AI, Slack AI, ClickUp, Asana, and Atlassian. Every one of those has a foothold and a limitation, and the honest version of that comparison is more convincing than pretending the category is empty.</p>
+
+    <div class="comp-table rv">
+      <div class="comp-row comp-head-row">
+        <div class="comp-cell">Tool</div>
+        <div class="comp-cell">What it&rsquo;s actually for</div>
+        <div class="comp-cell">Where Neo&rsquo;s bet is different</div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell"><span class="comp-tool"><span class="comp-mono">M</span>Microsoft Copilot</span></div>
+        <div class="comp-cell">An AI layer inside Office and Teams. Strong where a company&rsquo;s working context already lives in Microsoft 365.</div>
+        <div class="comp-cell">Copilot goes where Microsoft already sits. Neo&rsquo;s bet is that most companies&rsquo; real context lives outside Microsoft too, in Slack threads, Salesforce records, and Notion docs.</div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell"><span class="comp-tool"><span class="comp-mono">N</span>Notion AI</span></div>
+        <div class="comp-cell">A capable writing and Q&amp;A layer over Notion&rsquo;s own docs and wikis.</div>
+        <div class="comp-cell">Strong for what&rsquo;s already written down inside Notion. No native task delegation layer, and no agent that executes work across other tools.</div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell"><span class="comp-tool"><span class="comp-mono">A</span>Asana / ClickUp</span></div>
+        <div class="comp-cell">Mature project management tools, now shipping their own AI feature layers on top.</div>
+        <div class="comp-cell">Task tracking is the starting point here, not the end state. Neo treats task management as one surface of four, with Friday as the execution layer across all of them, not a bolt-on.</div>
+      </div>
+      <div class="comp-row">
+        <div class="comp-cell"><span class="comp-tool"><span class="comp-mono">S</span>Slack AI</span></div>
+        <div class="comp-cell">Summarizes and searches what already happened inside Slack.</div>
+        <div class="comp-cell">Sees one channel of context, well. Neo&rsquo;s pitch is that no single tool, Slack included, holds the whole picture alone.</div>
+      </div>
+    </div>
+
+    <div class="pull rv">The honest read: none of these are the wrong tool. Each one owns a room in the building well. Neo&rsquo;s bet is that the value nobody&rsquo;s captured yet sits in the hallway connecting them.</div>
+    <p class="disclaimer">Competitor framing is based on public product positioning and press coverage of Neo&rsquo;s launch, not a formal battlecard from Neo. I haven&rsquo;t seen an internal comp doc.</p>
+  </div>
+</section>
+
+<!-- ============ 03 TWO LAUNCHES ============ -->
+<section class="part" id="launch">
+  <div class="wrap">
+    <div class="sec-label rv"><span class="sec-num">03</span><span class="sec-title">Two Launches</span></div>
+    <h2 class="part-h rv">The habit being launched isn&rsquo;t a feature. It&rsquo;s delegation.</h2>
+    <p class="part-lead rv">Reported timeline: select access around August 2026, wider release around January 2027, both from press coverage, not Neo&rsquo;s own site. The real risk in that window isn&rsquo;t awareness. It&rsquo;s the first time someone has to actually trust Friday with a task instead of doing it themselves.</p>
+
+    <div class="lp-grid lp-3 rv">
+      <div class="lp-card">
+        <span class="lp-tag">Now</span>
+        <h4>Guarantee the first delegation</h4>
+        <ul>
+          <li>One pre-built task in onboarding that can&rsquo;t fail: a renewal, a follow-up, a report</li>
+          <li>Day one becomes a completed handoff, not an empty inbox waiting for input</li>
+        </ul>
+      </div>
+      <div class="lp-card gold">
+        <span class="lp-tag">Select access</span>
+        <h4>Name the moment, not the waitlist</h4>
+        <ul>
+          <li>Track time-to-first-delegation per account as the real activation metric</li>
+          <li>Pre-seed 5 to 8 accounts willing to be named once they hit it</li>
+        </ul>
+      </div>
+      <div class="lp-card">
+        <span class="lp-tag">Toward Jan 2027</span>
+        <h4>Publish delegation, not testimonials</h4>
+        <ul>
+          <li>&ldquo;She delegated her renewal, her onboarding doc, her weekly report&rdquo;, told in Neo&rsquo;s own words</li>
+          <li>Lock the category table from Section 02 before competitors define it first</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="metrics-head rv">
+      <span class="dk-label">Success metrics</span>
+      <span class="metrics-sub">The four numbers that matter more than waitlist size</span>
+    </div>
+    <div class="metrics-grid mg-4 rv">
+      <div class="metric-card"><span class="metric-cat">Speed</span><p>Time to first completed delegation, per account</p></div>
+      <div class="metric-card"><span class="metric-cat">Depth</span><p>Delegations run per active seat, week over week</p></div>
+      <div class="metric-card"><span class="metric-cat">Spread</span><p>Accounts with more than one person delegating, not just one</p></div>
+      <div class="metric-card"><span class="metric-cat">Proof</span><p>Named delegation stories ready ahead of Jan 2027</p></div>
+    </div>
+    <p class="disclaimer">Timeline based on media coverage of Neo&rsquo;s launch, flagged as reported rather than officially confirmed by Neo.</p>
+  </div>
+</section>
+
+<!-- ============ 04 NARRATIVE TO MOTION ============ -->
+<section class="part" id="motion">
+  <div class="wrap">
+    <div class="sec-label rv"><span class="sec-num">04</span><span class="sec-title">Press Enter</span></div>
+    <h2 class="part-h rv">Neo isn&rsquo;t selling software. It&rsquo;s selling delegation.</h2>
+    <p class="part-lead rv">Every page on neo.work says so, in different words. So the clearest thing I could build wasn&rsquo;t another paragraph, it was the five seconds after someone actually presses Enter.</p>
+
+    <div class="press-wrap rv" id="pressWrap">
+      <div class="press-item">
+        <div class="press-dotcol"><div class="press-dot" id="pdot0"><svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5.5" r="2.5" stroke="currentColor" stroke-width="1.4"/><path d="M3 14c0-2.8 2.2-5 5-5s5 2.2 5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg></div><div class="press-seg" id="pseg0"></div></div>
+        <div class="press-label-row"><div class="press-name" id="pname0">You</div><div class="press-sub" id="psub0">Type the task, plain language</div></div>
+      </div>
+      <div class="press-item">
+        <div class="press-dotcol"><div class="press-dot" id="pdot1"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2l1.6 4.4L14 8l-4.4 1.6L8 14l-1.6-4.4L2 8l4.4-1.6L8 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></div><div class="press-seg" id="pseg1"></div></div>
+        <div class="press-label-row"><div class="press-name" id="pname1">Friday</div><div class="press-sub" id="psub1">Reads it, decides what&rsquo;s needed</div></div>
+      </div>
+      <div class="press-item">
+        <div class="press-dotcol"><div class="press-dot" id="pdot2"><svg viewBox="0 0 16 16" fill="none"><path d="M2 5.5L8 2l6 3.5-6 3.5-6-3.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M2 5.5V11l6 3.5 6-3.5V5.5" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg></div><div class="press-seg" id="pseg2"></div></div>
+        <div class="press-label-row"><div class="press-name" id="pname2">Drive</div><div class="press-sub" id="psub2">Pulls the contract terms</div></div>
+      </div>
+      <div class="press-item">
+        <div class="press-dotcol"><div class="press-dot" id="pdot3"><svg viewBox="0 0 16 16" fill="none"><rect x="2.5" y="3" width="11" height="10" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M2.5 6.5h11" stroke="currentColor" stroke-width="1.3"/></svg></div><div class="press-seg" id="pseg3"></div></div>
+        <div class="press-label-row"><div class="press-name" id="pname3">CRM</div><div class="press-sub" id="psub3">Checks where the deal stands</div></div>
+      </div>
+      <div class="press-item">
+        <div class="press-dotcol"><div class="press-dot" id="pdot4"><svg viewBox="0 0 16 16" fill="none"><rect x="2.5" y="3.5" width="11" height="9.5" rx="1.5" stroke="currentColor" stroke-width="1.3"/><path d="M2.5 6.5h11M5.5 2v3M10.5 2v3" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></div><div class="press-seg" id="pseg4"></div></div>
+        <div class="press-label-row"><div class="press-name" id="pname4">Calendar</div><div class="press-sub" id="psub4">Books the follow-up call</div></div>
+      </div>
+      <div class="press-item">
+        <div class="press-dotcol"><div class="press-dot" id="pdot5"><svg viewBox="0 0 16 16" fill="none"><path d="M3 2.5h7l3 3v8a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-10a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M5 8h6M5 10.5h4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg></div><div class="press-seg" id="pseg5"></div></div>
+        <div class="press-label-row"><div class="press-name" id="pname5">Studio</div><div class="press-sub" id="psub5">Drafts the renewal</div></div>
+      </div>
+      <div class="press-item">
+        <div class="press-dotcol"><div class="press-dot" id="pdot6"><svg viewBox="0 0 16 16" fill="none"><path d="M3 8.5l3 3 7-7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+        <div class="press-label-row"><div class="press-name" id="pname6">Done</div><div class="press-sub" id="psub6">Ready for you to review</div></div>
+      </div>
+      <button class="replay-btn" onclick="runPress()">
+        <svg viewBox="0 0 14 14" fill="none"><path d="M12.5 7a5.5 5.5 0 1 1-1.6-3.87M12.5 1.5v3.13H9.37" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Replay
+      </button>
+    </div>
+    <p class="disclaimer">Illustrative walkthrough of Friday completing a delegated task, not a captured product recording.</p>
+  </div>
+</section>
+
+<!-- ============ 05 RUNNING THE TEAM ============ -->
+<section class="part" id="ops">
+  <div class="wrap">
+    <div class="sec-label rv"><span class="sec-num">05</span><span class="sec-title">Running the Team</span></div>
+    <h2 class="part-h rv">Month one, running the function, not just the launch.</h2>
+    <p class="part-lead rv">A marketing team pitching &ldquo;adoption inertia&rdquo; while its own campaigns restart from zero every time isn&rsquo;t a good look. Here&rsquo;s how I&rsquo;d avoid becoming the case study Neo is trying to fix.</p>
+
+    <div class="ops-grid rv">
+      <div class="ops-card">
+        <span class="ops-tag">Week one</span>
+        <h4>One positioning doc, not five decks</h4>
+        <p>A single source of truth for messaging and the comparison table from Section 02, so every deck and campaign pulls from the same sentence instead of drifting.</p>
+      </div>
+      <div class="ops-card">
+        <span class="ops-tag">Ongoing</span>
+        <h4>A weekly, AI-assisted category scan</h4>
+        <p>Copilot, Gemini for Workspace, and Notion AI ship fast. A standing weekly pass on what changed keeps the comparison table current instead of stale by the time it&rsquo;s used.</p>
+      </div>
+      <div class="ops-card">
+        <span class="ops-tag">Team workflow</span>
+        <h4>A shared prompt and template library</h4>
+        <p>Adoption inertia, fixed inside the team itself: when someone builds a good workflow for a brief or a battlecard, it goes into a shared library, not their own head.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 06 OTHER RELEVANT WORK ============ -->
+<section class="part" id="work" style="border-bottom:none;">
+  <div class="wrap">
+    <div class="sec-label rv"><span class="sec-num">06</span><span class="sec-title">Other Relevant Work</span></div>
+    <h2 class="part-h rv">Five samples worth a look</h2>
+
+    <div class="wgrid rv">
+      <a class="wcard" href="https://bhanuexcalibur.github.io/glean_pow/" target="_blank" rel="noopener">
+        <span class="wcard-tag">Full PoW &nbsp;&middot;&nbsp; Enterprise search / knowledge graph</span>
+        <h4>Glean</h4>
+        <p>Messaging and GTM for an AI layer that connects Slack, Confluence, Salesforce, and Gong into one searchable graph. The same &ldquo;your tools already hold the answer, they just don&rsquo;t talk&rdquo; problem Neo names as context fragmentation.</p>
+        <span class="wcard-arr">&rarr;</span>
+      </a>
+
+      <a class="wcard" href="https://bhanuexcalibur.github.io/SarvamAI/" target="_blank" rel="noopener">
+        <span class="wcard-tag">Full PoW &nbsp;&middot;&nbsp; Enterprise AI, vertical positioning</span>
+        <h4>Sarvam AI</h4>
+        <p>Rebuilt a broad AI platform pitch into vertical-specific positioning and a sales enablement kit. The exact exercise Neo needs the day it moves from one waitlist form to persona-specific outreach across IT, ops, and function leads.</p>
+        <span class="wcard-arr">&rarr;</span>
+      </a>
+
+      <a class="wcard" href="https://bhanuexcalibur.github.io/ReoDev/" target="_blank" rel="noopener">
+        <span class="wcard-tag">Full PoW &nbsp;&middot;&nbsp; AI agent product, launch and demo</span>
+        <h4>Reo.Dev</h4>
+        <p>A launch narrative and 30-second demo storyboard for an AI agent that acts inside a workflow instead of just answering questions. The same &ldquo;agent as coworker, not chatbot&rdquo; translation Friday needs on day one.</p>
+        <span class="wcard-arr">&rarr;</span>
+      </a>
+
+      <a class="wcard" href="https://bhanuexcalibur.github.io/Lifesight/" target="_blank" rel="noopener">
+        <span class="wcard-tag">Full PoW &nbsp;&middot;&nbsp; Marketing data platform, AI feature launch</span>
+        <h4>Lifesight</h4>
+        <p>Messaging audit and GTM brief for an AI feature launch, where the insight was never the hard part, the action after it was. The same shape as Tasket turning a task list into something that actually executes.</p>
+        <span class="wcard-arr">&rarr;</span>
+      </a>
+
+      <a class="wcard full" href="https://bhanuexcalibur.github.io/Boundless-PoW/" target="_blank" rel="noopener">
+        <span class="wcard-tag">Messaging audit &nbsp;&middot;&nbsp; Multi-buyer technical</span>
+        <h4>Boundless</h4>
+        <p>A three-buyer rewrite for one compliance product: risk officer, CTO, and partner BD, each needing a different opening line for the same platform. Neo sells one suite into IT, ops, and function leads at the same time. Same exercise, wider building.</p>
+        <span class="wcard-arr">&rarr;</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- SIGNATURE -->
+<div class="wrap">
+  <div class="sig">
+    <div>
+      <div class="sig-name">Bhanu <span>Kumar</span></div>
+      <div class="sig-icons">
+        <a href="mailto:bhanukumar0902@gmail.com" aria-label="Email" title="Email">
+          <svg viewBox="0 0 20 20" fill="none"><rect x="2.5" y="4.5" width="15" height="11" rx="1.8" stroke="currentColor" stroke-width="1.4"/><path d="M3.5 5.5l6.5 5 6.5-5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a href="https://linkedin.com/in/bhanuexcalibur" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn">
+          <svg viewBox="0 0 20 20" fill="none"><rect x="2" y="2" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.4"/><path d="M6.8 8.3v6.2M6.8 6v.03M9.8 14.5V11c0-1.2.7-2 1.9-2 1.1 0 1.7.8 1.7 2v3.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="sig-btns">
+      <a class="sbtn pri" href="mailto:bhanukumar0902@gmail.com">
+        Get in touch
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2.5 6.5h8M7.5 3.5l3 3-3 3" stroke="#0c0917" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <a class="sbtn ghost" href="https://drive.google.com/file/d/1dNh5qXBscsXGamUp9pj9B3RgNZyP2gs2/view" target="_blank" rel="noopener">Full resume &rarr;</a>
+    </div>
+  </div>
+  <div class="note">Built around Neo&rsquo;s public site (neo.work) and press coverage of its launch. Every product fact above is sourced from those; timelines and competitor framing are flagged where they&rsquo;re reported rather than confirmed, and the hero walkthrough is explicitly illustrative, not a benchmarked number.</div>
+</div>
+
+<script>
+function toggleMob(){
+  document.getElementById('hbg').classList.toggle('open');
+  document.getElementById('mobm').classList.toggle('open');
+}
+function closeMob(){
+  document.getElementById('hbg').classList.remove('open');
+  document.getElementById('mobm').classList.remove('open');
+}
+
+function updateProgress(){
+  var h = document.documentElement;
+  var pct = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+  document.getElementById('pbar').style.width = pct + '%';
+}
+window.addEventListener('scroll', updateProgress, {passive:true});
+
+var rvIo = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); } });
+},{threshold:0.12});
+document.querySelectorAll('.rv').forEach(function(el){ rvIo.observe(el); });
+
+function setTab(section, btn, panelId){
+  var nav = btn.parentElement;
+  nav.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('on'); t.classList.remove('gold'); });
+  btn.classList.add('on');
+  if(panelId === 't1b' || panelId === 't3b'){ btn.classList.add('gold'); }
+  var container = nav.parentElement;
+  container.querySelectorAll('.tpanel').forEach(function(p){ p.classList.remove('on'); });
+  container.querySelector('[data-panel="'+panelId+'"]').classList.add('on');
+}
+
+/* ===== PRESS ENTER PIPELINE ===== */
+var pressAutoPlayed = false;
+var pressTimers = [];
+function runPress(){
+  // cancel any animation still in flight from a previous run before restarting
+  pressTimers.forEach(function(t){ clearTimeout(t); });
+  pressTimers = [];
+
+  for(var i=0;i<7;i++){
+    document.getElementById('pdot'+i).classList.remove('on','done');
+    document.getElementById('pname'+i).classList.remove('on');
+    document.getElementById('psub'+i).classList.remove('on');
+    var seg0 = document.getElementById('pseg'+i);
+    if(seg0){ seg0.classList.remove('fill'); }
+  }
+  var step = 420;
+  for(var i=0;i<7;i++){
+    (function(i){
+      var t1 = setTimeout(function(){
+        var dot = document.getElementById('pdot'+i);
+        dot.classList.add(i === 6 ? 'done' : 'on');
+        document.getElementById('pname'+i).classList.add('on');
+        document.getElementById('psub'+i).classList.add('on');
+        var seg = document.getElementById('pseg'+i);
+        if(seg){
+          var t2 = setTimeout(function(){ seg.classList.add('fill'); }, 120);
+          pressTimers.push(t2);
+        }
+      }, i*step);
+      pressTimers.push(t1);
+    })(i);
+  }
+}
+
+var pressIo = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting && !pressAutoPlayed){
+      pressAutoPlayed = true;
+      setTimeout(runPress, 300);
+    }
+  });
+},{threshold:0.4});
+var pressEl = document.getElementById('pressWrap');
+if(pressEl){ pressIo.observe(pressEl); }
+
+/* ===== HERO TOGGLE WIDGET ===== */
+var apps = ['Gmail','Slack','Salesforce','Calendar','Notion'];
+var checks = [
+  'Pulled contract terms from Drive',
+  'Checked deal stage in CRM via Friday',
+  'Drafted the renewal in Studio',
+  'Booked the call on the calendar'
+];
+var toggleState = false; // false = off (without neo), true = on (with neo)
+var toggleBusy = false;
+
+function buildChips(){
+  var row = document.getElementById('chipRow');
+  row.innerHTML = '';
+  apps.forEach(function(name){
+    var c = document.createElement('div');
+    c.className = 'appchip';
+    c.innerHTML = '<span class="chip-mono">'+name.charAt(0)+'</span>'+name;
+    row.appendChild(c);
+  });
+}
+function buildChecks(){
+  var list = document.getElementById('checkList');
+  list.innerHTML = '';
+  checks.forEach(function(text){
+    var item = document.createElement('div');
+    item.className = 'check-item';
+    item.innerHTML = '<span class="check-box"><svg viewBox="0 0 10 10" fill="none"><path d="M1.5 5l2.3 2.3L8.5 2.5" stroke="#06140f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span>'+text+'</span>';
+    list.appendChild(item);
+  });
+}
+
+function runOff(){
+  toggleBusy = true;
+  buildChips();
+  document.getElementById('statusOff').classList.remove('in');
+  document.getElementById('statSwitch').textContent = '0';
+  document.getElementById('statTime').textContent = '0:00';
+
+  var chips = document.querySelectorAll('#chipRow .appchip');
+  var switches = 0;
+  var elapsed = 0;
+  chips.forEach(function(chip, i){
+    setTimeout(function(){
+      chip.classList.add('in');
+      setTimeout(function(){
+        chips.forEach(function(c){c.classList.remove('active');});
+        chip.classList.add('active');
+        switches++;
+        elapsed += Math.floor(2 + Math.random()*3);
+        document.getElementById('statSwitch').textContent = switches;
+        var m = Math.floor(elapsed/60), s = elapsed%60;
+        document.getElementById('statTime').textContent = m+':'+(s<10?'0':'')+s;
+      }, 220);
+    }, 180 + i*420);
+  });
+  setTimeout(function(){
+    document.getElementById('statusOff').classList.add('in');
+    toggleBusy = false;
+  }, 180 + apps.length*420 + 500);
+}
+
+function runOn(){
+  toggleBusy = true;
+  buildChecks();
+  document.getElementById('statusOn').classList.remove('in');
+  var items = document.querySelectorAll('#checkList .check-item');
+  items.forEach(function(item, i){
+    setTimeout(function(){
+      item.classList.add('in');
+      setTimeout(function(){
+        item.querySelector('.check-box').classList.add('on');
+        item.classList.add('done');
+      }, 260);
+    }, 150 + i*420);
+  });
+  setTimeout(function(){
+    document.getElementById('statusOn').classList.add('in');
+    toggleBusy = false;
+  }, 150 + items.length*420 + 400);
+}
+
+function handleToggle(){
+  if(toggleBusy) return;
+  toggleState = !toggleState;
+  var sw = document.getElementById('tsw');
+  sw.classList.toggle('on', toggleState);
+  document.getElementById('labOff').classList.toggle('on', !toggleState);
+  document.getElementById('labOn').classList.toggle('on', toggleState);
+  document.getElementById('labOn').classList.toggle('green', toggleState);
+  document.getElementById('stageOff').classList.toggle('show', !toggleState);
+  document.getElementById('stageOn').classList.toggle('show', toggleState);
+  if(toggleState){ runOn(); } else { runOff(); }
+}
+
+buildChips();
+buildChecks();
+setTimeout(function(){
+  runOff();
+  setTimeout(function(){ handleToggle(); }, apps.length*420 + 1400);
+}, 450);
+</script>
+
+</body>
+</html>
